@@ -2,15 +2,6 @@
 
 A simple car rental management system built with C++ structures for the OOP course at SEEU.
 
-## Compile & Run
-
-```bash
-g++ car_rental_system.cpp -o car_rental
-./car_rental
-```
-
-On Windows (Visual Studio / Dev-C++), just open the file and hit Run.
-
 ## Features
 
 - Add cars and customers
