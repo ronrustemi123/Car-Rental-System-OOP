@@ -1,4 +1,4 @@
-# Car Rental System — C++
+# Car Rental System
 
 A simple car rental management system built with C++ structures for the OOP course at SEEU.
 
