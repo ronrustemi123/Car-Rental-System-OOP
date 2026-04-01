@@ -6,6 +6,7 @@ bazuar ne numrin e qirave. Sistemi mbeshtet operacionet si: shtimi i makinave te
 klienteve, dhenia me qira e makinave, kthimi i tyre, si dhe llogaritja e kostos bazuar ne ditet e qirase
 dhe cmimin ditor. Ky aplikacion siguron nje menyre efikase per menaxhimin e nje agjencie te tille.*/
 
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -15,19 +16,22 @@ const int MAX_CARS = 50;
 const int MAX_CUSTOMERS = 50;
 const int MAX_RENTALS = 100;
 
-struct Address { // adresa e klientit
+// ruan rrugën qytetin dhe kodin postar te klientit
+struct Address {
     string street;
     string city;
     string zipCode;
 };
 
+// ruan te dhenat e klientit me adresen brenda
 struct Customer {
     int ID;
     string name;
     string phone;
-    Address address; // nested structure
+    Address address;
 };
 
+// ruan te dhenat e makines dhe nese eshte e lire
 struct Car {
     int ID;
     string brand;
@@ -37,6 +41,7 @@ struct Car {
     bool isAvailable;
 };
 
+// ruan nje qira te tere me klientin makinen datat dhe koston
 struct RentalRecord {
     Customer customer;
     Car car;
@@ -45,7 +50,8 @@ struct RentalRecord {
     double totalCost;
 };
 
-struct RentalSystem { // struktura kryesore
+// struktura kryesore qe mban gjithe te dhenat e sistemit
+struct RentalSystem {
     string agencyName;
     Car cars[MAX_CARS];
     Customer customers[MAX_CUSTOMERS];
@@ -54,16 +60,25 @@ struct RentalSystem { // struktura kryesore
     int numCustomers;
     int numRentals;
 
+    // merr te dhenat e makines nga perdoruesi dhe e shton ne liste
     void addCar();
+    // merr te dhenat e klientit nga perdoruesi dhe e shton ne liste
     void addCustomer();
+    // shfaq te gjitha makinat me statusin e tyre
     void displayCars() const;
+    // shfaq te gjithe klientet e regjistruar
     void displayCustomers() const;
 };
 
+// shfaq listen e opsioneve ne ekran
 void displayMenu();
+// lidh nje klient me nje makine te lire dhe llogarit koston
 void rentCar(RentalSystem& system);
+// e ben makinen te lire perseri dhe shfaq koston finale
 void returnCar(RentalSystem& system);
+// shfaq te gjitha qirate aktive me detajet e tyre
 void displayRentals(const RentalSystem& system);
+// numeron qirat per makine dhe kthen ate me me shume
 string findMostRentedCar(const RentalSystem& system);
 
 int main() {
@@ -73,7 +88,6 @@ int main() {
     rentalSystem.numCustomers = 0;
     rentalSystem.numRentals = 0;
 
-    // disa makina dhe klientë fillestare
     rentalSystem.cars[0] = { 1, "Toyota", "Corolla", 2020, 35.0, true };
     rentalSystem.cars[1] = { 2, "BMW", "Seria 3", 2022, 75.0, true };
     rentalSystem.cars[2] = { 3, "Ford", "Focus", 2019, 30.0, true };
@@ -126,6 +140,7 @@ int main() {
     return 0;
 }
 
+// shfaq menune me te gjitha opsionet
 void displayMenu() {
     cout << "\n===== Sistemi i Makinave me Qira =====" << endl;
     cout << "1. Shto Makine" << endl;
@@ -139,6 +154,7 @@ void displayMenu() {
     cout << "9. Dil" << endl;
 }
 
+// merr inputin nga perdoruesi dhe shton makine te re ne array
 void RentalSystem::addCar() {
     cout << "Marka: ";
     getline(cin, cars[numCars].brand);
@@ -158,6 +174,7 @@ void RentalSystem::addCar() {
     cout << "Makina u shtua!" << endl;
 }
 
+// merr inputin nga perdoruesi dhe shton klient te ri ne array
 void RentalSystem::addCustomer() {
     cout << "Emri: ";
     getline(cin, customers[numCustomers].name);
@@ -176,6 +193,7 @@ void RentalSystem::addCustomer() {
     cout << "Klienti u shtua!" << endl;
 }
 
+// printon te gjitha makinat ne forme tabele me statusin e tyre
 void RentalSystem::displayCars() const {
     cout << "\n===== Lista e Makinave =====" << endl;
     cout << left << setw(5) << "ID" << setw(12) << "Marka" << setw(12) << "Modeli"
@@ -191,6 +209,7 @@ void RentalSystem::displayCars() const {
     }
 }
 
+// printon te gjithe klientet ne forme tabele
 void RentalSystem::displayCustomers() const {
     cout << "\n===== Lista e Klienteve =====" << endl;
     cout << left << setw(5) << "ID" << setw(22) << "Emri" << setw(15) << "Telefoni" << "Qyteti" << endl;
@@ -203,8 +222,8 @@ void RentalSystem::displayCustomers() const {
     }
 }
 
+// lejon perdoruesin te zgjedhe klientin dhe makinen pastaj krijon nje rekord qiraje
 void rentCar(RentalSystem& system) {
-    // shfaq klientet
     cout << "\nKlientet:" << endl;
     for (int i = 0; i < system.numCustomers; i++)
         cout << i + 1 << ". " << system.customers[i].name << endl;
@@ -214,7 +233,6 @@ void rentCar(RentalSystem& system) {
     cin >> customerChoice;
     cin.ignore();
 
-    // shfaq makinat e lira
     cout << "\nMakinat e disponueshme:" << endl;
     for (int i = 0; i < system.numCars; i++) {
         if (system.cars[i].isAvailable)
@@ -238,15 +256,18 @@ void rentCar(RentalSystem& system) {
     cin >> newRental.endDay;
     cin.ignore();
 
+    // llogarit koston totale bazuar ne ditet dhe cmimin ditor
     int days = newRental.endDay - newRental.startDay;
     newRental.totalCost = days * newRental.car.dailyRate;
 
-    system.cars[carChoice - 1].isAvailable = false; // makina tani eshte e zene
+    // e shenom makinen si te zene dhe e ruajme qirane
+    system.cars[carChoice - 1].isAvailable = false;
     system.rentals[system.numRentals++] = newRental;
 
     cout << "Makina u dha me qira! Kostoja: $" << newRental.totalCost << endl;
 }
 
+// gjen makinen ne array dhe e ben te lire perseri
 void returnCar(RentalSystem& system) {
     cout << "\nQirate aktive:" << endl;
     for (int i = 0; i < system.numRentals; i++)
@@ -258,10 +279,10 @@ void returnCar(RentalSystem& system) {
     cin >> rentalChoice;
     cin.ignore();
 
-    // gjejme makinen dhe e bejme te lire
     string brand = system.rentals[rentalChoice - 1].car.brand;
     string model = system.rentals[rentalChoice - 1].car.model;
 
+    // kerkojme makinen ne array dhe e lirojme
     for (int i = 0; i < system.numCars; i++) {
         if (system.cars[i].brand == brand && system.cars[i].model == model) {
             system.cars[i].isAvailable = true;
@@ -272,6 +293,7 @@ void returnCar(RentalSystem& system) {
     cout << "Makina u kthye! Kostoja totale: $" << system.rentals[rentalChoice - 1].totalCost << endl;
 }
 
+// shfaq te gjitha qirate ne forme tabele
 void displayRentals(const RentalSystem& system) {
     cout << "\n===== Qirate =====" << endl;
     cout << left << setw(22) << "Klienti" << setw(18) << "Makina"
@@ -287,6 +309,7 @@ void displayRentals(const RentalSystem& system) {
     }
 }
 
+// numeron sa here eshte qiradhene secila makine dhe kthen aten me numrin me te madh
 string findMostRentedCar(const RentalSystem& system) {
     int carCount[MAX_CARS] = { 0 };
 
@@ -300,7 +323,7 @@ string findMostRentedCar(const RentalSystem& system) {
         }
     }
 
-    // gjejme makinen me me shume qira
+    // gjejme indexin e makines me numrin me te larte
     int max = 0, index = 0;
     for (int i = 0; i < system.numCars; i++) {
         if (carCount[i] > max) {
